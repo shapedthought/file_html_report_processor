@@ -26,10 +26,11 @@ The JSON file can then be imported into Python Pandas for analysis. For example:
  dataframe.head()
 ```
 
-It is recommended to use folder_changes_view using an account with read only privileges to any file shares. 
+It is recommended to use folder_changes_view and the my application on a dedicated VM with an account **Read Only** 
+permissions
 
-I'm not concerned with the application, but best to be careful. 
+I have no concerns over either application; however, you cannot be too careful.
 
-This tool is made with PySimpleGUI, it's a great GUI framework, check them out here:
+This tool's GUI is made with PySimpleGUI, it's a great GUI framework, check them out here:
 
 https://pysimplegui.readthedocs.io/en/latest/ 
