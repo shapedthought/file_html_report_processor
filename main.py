@@ -22,7 +22,7 @@ class Gui:
              sg.FileBrowse(key='html_file_path')],
             [sg.Text('Import File', size=(16, 1)), sg.InputText(key='import_text', disabled=True),
              sg.FileBrowse(key='text_file_path', disabled=True)],
-            [sg.Text('Key', size=(16, 1)), sg.InputText(password_char='*', disabled=True, key='encypt_key')],
+            [sg.Text('Key', size=(16, 1)), sg.InputText(password_char='*', disabled=True, key='encrypt_key')],
             # [sg.Output(size=(20, 10))],
             [sg.Submit('Submit', key='SUBMIT'), sg.Cancel('Cancel', key='CANCEL')]]
 
@@ -63,17 +63,24 @@ class HtmlConvert:
     def unencrypt(self, values):
         with open(values['import_text'], 'rb') as encrypted_file:
             encrypted = encrypted_file.read()
+        fernet = ''
+        decrypted = ''
+        try:
+            fernet = Fernet(values['encrypt_key'])
+        except Exception as e:
+            sg.popup_error('Error with key')
+        try:
+            decrypted = fernet.decrypt(encrypted).decode('utf-8')
+        except Exception as e:
+            sg.popup_error('Error in decrypting')
 
-        fernet = Fernet(values['encypt_key'])
-
-        decrypted = fernet.decrypt(encrypted).decode('utf-8')
-
-        data_json = json.loads(decrypted)
-
-        with open('decypted_file.json', 'w') as json_file:
-            json.dump(data_json, json_file)
-
-        sg.popup('JSON file saved!')
+        if len(decrypted) < 1:
+            sg.popup_error('Data was not decrypted, key maybe incorrect')
+        else:
+            data_json = json.loads(decrypted)
+            with open('report_file.json', 'w') as json_file:
+                json.dump(data_json, json_file)
+            sg.popup('JSON file saved!')
 
     def hash_func(self, file_name):
         hash_val = hashlib.sha256()
@@ -97,9 +104,11 @@ class main():
                 sg.popup_error('We need the HTML file!')
             elif import_html and values['import_html']:
                 s.run_convert(values)
-            if not import_html and not values['import_text'] and not values['encypt_key']:
+            if not import_html and not values['import_text'] and not values['encrypt_key']:
                 sg.popup_error('Check inputs')
-            elif not import_html and values['import_text'] and values['encypt_key']:
+            elif len(values['encrypt_key']) < 44:
+                sg.popup_error('Encryption Key not long enough!')
+            elif not import_html and values['import_text'] and values['encrypt_key']:
                 s.unencrypt(values)
         if event == 'export_select':
             if import_html:
@@ -109,7 +118,7 @@ class main():
                 g.window['import_text'].update(disabled=False)
                 g.window['text_file_path'].update(disabled=False)
 
-                g.window['encypt_key'].update(disabled=False)
+                g.window['encrypt_key'].update(disabled=False)
                 import_html = False
         if event == 'import_select':
             if not import_html:
@@ -119,8 +128,7 @@ class main():
                 g.window['import_text'].update(disabled=True)
                 g.window['text_file_path'].update(disabled=True)
 
-                g.window['encypt_key'].update(disabled=True)
+                g.window['encrypt_key'].update(disabled=True)
                 import_html = True
         if event == 'About...':
             sg.popup('Created by Ed howard @ Veeam; edward.x.howard@veeam.com')
-
