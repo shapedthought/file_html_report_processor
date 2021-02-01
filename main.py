@@ -132,3 +132,7 @@ class main():
                 import_html = True
         if event == 'About...':
             sg.popup('Created by Ed howard @ Veeam; edward.x.howard@veeam.com')
+
+
+if __name__ == '__main__':
+    main()
