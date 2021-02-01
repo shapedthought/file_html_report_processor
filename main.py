@@ -131,7 +131,7 @@ class main():
                 g.window['encrypt_key'].update(disabled=True)
                 import_html = True
         if event == 'About...':
-            sg.popup('Created by Ed howard @ Veeam; edward.x.howard@veeam.com')
+            sg.popup('Created by Ed Howard')
 
 
 if __name__ == '__main__':
